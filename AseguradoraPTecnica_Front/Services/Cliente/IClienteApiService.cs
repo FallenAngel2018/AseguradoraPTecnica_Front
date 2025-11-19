@@ -1,6 +1,7 @@
 ﻿using AseguradoraPTecnica_Front.Models;
+using AseguradoraPTecnica_Front.Models.Cliente;
 
-namespace AseguradoraPTecnica_Front.Services
+namespace AseguradoraPTecnica_Front.Services.Cliente
 {
     public interface IClienteApiService
     {

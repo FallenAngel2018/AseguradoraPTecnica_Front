@@ -1,10 +1,11 @@
-using AseguradoraPTecnica_Front.Models;
-using AseguradoraPTecnica_Front.Services;
 using AseguradoraPTecnica_Front.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OfficeOpenXml;
+using ClosedXML.Excel;
 using System.Text.Json;
+using AseguradoraPTecnica_Front.Models.Cliente;
+using AseguradoraPTecnica_Front.Services.Cliente;
 
 namespace AseguradoraPTecnica_Front.Pages.Cliente
 {
@@ -74,9 +75,11 @@ namespace AseguradoraPTecnica_Front.Pages.Cliente
 
                 using (var streamValidacion = new MemoryStream(archivoBytes))
                 {
+                    var pruba = FileUtils.ValidarArchivoOpenXml(streamValidacion);
+
                     var validacion = extension == ".txt"
                         ? await FileUtils.ValidarArchivoTxtAsync(streamValidacion)
-                        : FileUtils.ValidarArchivoXlsxAsync(streamValidacion);
+                        : FileUtils.ValidarArchivoXlsx(archivo);
 
                     if (!validacion.esValido)
                     {
@@ -103,32 +106,16 @@ namespace AseguradoraPTecnica_Front.Pages.Cliente
             }
         }
 
-
-
-        private async Task<(bool esValido, string mensaje)> ValidarContenidoArchivoAsync(Stream archivo, string extension)
+        public async Task<PartialViewResult> OnGetActualizarTablaParcialAsync()
         {
-            try
-            {
-                if (extension == ".txt")
-                {
-                    return await FileUtils.ValidarArchivoTxtAsync(archivo);
-                }
-                else if (extension == ".xlsx")
-                {
-                    return FileUtils.ValidarArchivoXlsxAsync(archivo);
-                }
-
-                return (false, "Extensión no soportada");
-            }
-            catch (Exception ex)
-            {
-                return (false, $"Error al validar el archivo: {ex.Message}");
-            }
+            var clientes = await _clienteService.ObtenerTodosAsync();
+            return Partial("_TablaClientes", clientes);
         }
 
-        
 
-        
+
+
+
 
 
 

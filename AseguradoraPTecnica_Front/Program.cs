@@ -1,4 +1,5 @@
-using AseguradoraPTecnica_Front.Services;
+using AseguradoraPTecnica_Front.Services.Cliente;
+using AseguradoraPTecnica_Front.Services.Seguro;
 using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Services.AddHttpClient("SegurosAPI", client =>
 });
 
 builder.Services.AddScoped<IClienteApiService, ClienteApiService>();
+builder.Services.AddScoped<ISeguroApiService, SeguroApiService>();
 
 ExcelPackage.License.SetNonCommercialPersonal("Isaac OBesso");
 

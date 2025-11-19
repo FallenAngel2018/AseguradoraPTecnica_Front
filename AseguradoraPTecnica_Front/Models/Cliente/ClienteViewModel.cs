@@ -1,4 +1,4 @@
-﻿namespace AseguradoraPTecnica_Front.Models
+﻿namespace AseguradoraPTecnica_Front.Models.Cliente
 {
     public class ClienteViewModel
     {

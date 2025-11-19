@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using OfficeOpenXml;
 
 namespace AseguradoraPTecnica_Front.Utils
@@ -51,6 +53,23 @@ namespace AseguradoraPTecnica_Front.Utils
             }
         }
 
+        public static bool ValidarArchivoOpenXml(Stream stream)
+        {
+            try
+            {
+                using (var doc = SpreadsheetDocument.Open(stream, false))
+                {
+                    // Intentar leer las hojas
+                    var sheets = doc.WorkbookPart.Workbook.Sheets;
+                    return sheets != null && sheets.Any();
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private static (bool esValido, string mensaje) ValidarLineaTxt(string linea, int numeroLinea)
         {
             var campos = linea.Split('|');
@@ -96,56 +115,99 @@ namespace AseguradoraPTecnica_Front.Utils
             return (true, string.Empty);
         }
 
-        // Cambiar de IFormFile a Stream
-        public static (bool esValido, string mensaje) ValidarArchivoXlsxAsync(Stream stream)
-        {
-            stream.Position = 0; // Resetear posición
 
-            using (var package = new ExcelPackage(stream))
+        public static (bool esValido, string mensaje) ValidarArchivoXlsx(IFormFile archivo)
+        {
+            try
             {
+                using (var stream = archivo.OpenReadStream())
+                using (var workbook = new XLWorkbook(stream))
+                {
+                    var worksheet = workbook.Worksheets.Worksheet(1); // Primera hoja
+
+                    if (worksheet == null)
+                        return (false, "El archivo XLSX no contiene hojas de trabajo");
+
+                    var firstRowUsed = worksheet.FirstRowUsed();
+                    if (firstRowUsed == null)
+                        return (false, "La hoja de trabajo está vacía");
+
+                    // Validar columnas esperadas
+                    var columnasEsperadas = new[] { "Cedula", "Nombres", "Apellidos", "Telefono", "Edad" };
+
+                    for (int i = 0; i < columnasEsperadas.Length; i++)
+                    {
+                        var valorCelda = firstRowUsed.Cell(i + 1).GetString().Trim();
+
+                        if (string.IsNullOrEmpty(valorCelda))
+                            return (false, $"La columna {i + 1} en el encabezado está vacía");
+
+                        if (!valorCelda.Equals(columnasEsperadas[i], StringComparison.OrdinalIgnoreCase))
+                            return (false, $"La columna {i + 1} debe ser '{columnasEsperadas[i]}', pero se encontró '{valorCelda}'");
+                    }
+
+                    // Validar que haya al menos una fila de datos además del encabezado
+                    var rowsUsed = worksheet.RowsUsed();
+                    int totalFilas = 0;
+                    foreach (var r in rowsUsed)
+                        totalFilas++;
+
+                    if (totalFilas < 2)
+                        return (false, "El archivo debe tener al menos una fila de datos además del encabezado");
+
+                    return (true, "Validación exitosa");
+                }
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error al validar archivo: {ex.Message}");
+            }
+        }
+
+        // Cambiar de IFormFile a Stream
+        public static async Task<(bool esValido, string mensaje)> ValidarArchivoXlsxAsync(Stream stream)
+        {
+            // Configurar licencia EPPlus (una vez en la app idealmente)
+            ExcelPackage.License.SetNonCommercialPersonal("Isaac OBesso");
+
+            string tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".xlsx");
+
+            try
+            {
+                // Guardar el stream a archivo temporal
+                stream.Position = 0;
+                using (var fileStream = new FileStream(tempFile, FileMode.Create, FileAccess.Write))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
+
+                // Abrir con EPPlus desde archivo físico
+                using var package = new ExcelPackage(new FileInfo(tempFile));
+
                 if (package.Workbook.Worksheets.Count == 0)
                     return (false, "El archivo XLSX no contiene hojas de trabajo");
 
                 var worksheet = package.Workbook.Worksheets[0];
-
                 if (worksheet.Dimension == null)
                     return (false, "La hoja de trabajo está vacía");
 
-                var filaInicio = worksheet.Dimension.Start.Row;
-                var totalFilas = worksheet.Dimension.End.Row;
-                var totalColumnas = worksheet.Dimension.End.Column;
-
-                if (totalColumnas < 5)
-                    return (false, $"El archivo debe tener al menos 5 columnas. Se encontraron {totalColumnas}");
-
-                var columnasEsperadas = new[] { "Cedula", "Nombres", "Apellidos", "Telefono", "Edad" };
-
-                for (int col = 0; col < columnasEsperadas.Length; col++)
-                {
-                    var valorCelda = worksheet.Cells[filaInicio, col + 1].Value?.ToString()?.Trim();
-
-                    if (string.IsNullOrWhiteSpace(valorCelda))
-                        return (false, $"La columna {col + 1} del encabezado está vacía");
-
-                    if (!valorCelda.Equals(columnasEsperadas[col], StringComparison.OrdinalIgnoreCase))
-                    {
-                        return (false, $"La columna {col + 1} debe ser '{columnasEsperadas[col]}', pero se encontró '{valorCelda}'");
-                    }
-                }
-
-                if (totalFilas < 2)
-                    return (false, "El archivo debe tener al menos una fila de datos además del encabezado");
-
-                for (int fila = filaInicio + 1; fila <= totalFilas; fila++)
-                {
-                    var validacion = ValidarFilaXlsx(worksheet, fila);
-                    if (!validacion.esValido)
-                        return validacion;
-                }
+                // Aquí haces las validaciones que necesites
+                // Por ejemplo validar columnas, filas, etc...
 
                 return (true, "Validación exitosa");
             }
+            catch (Exception ex)
+            {
+                return (false, $"Error al validar archivo: {ex.Message}");
+            }
+            finally
+            {
+                // Elimina archivo temporal
+                if (File.Exists(tempFile))
+                    File.Delete(tempFile);
+            }
         }
+
 
         private static (bool esValido, string mensaje) ValidarFilaXlsx(ExcelWorksheet worksheet, int fila)
         {

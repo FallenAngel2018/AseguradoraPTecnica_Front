@@ -1,8 +1,9 @@
 ﻿using System.Text;
 using System.Text.Json;
 using AseguradoraPTecnica_Front.Models;
+using AseguradoraPTecnica_Front.Models.Cliente;
 
-namespace AseguradoraPTecnica_Front.Services
+namespace AseguradoraPTecnica_Front.Services.Cliente
 {
     public class ClienteApiService : IClienteApiService
     {
@@ -265,7 +266,7 @@ namespace AseguradoraPTecnica_Front.Services
         {
             var client = _httpClientFactory.CreateClient("SegurosAPI");
 
-            using (var content = new System.Net.Http.MultipartFormDataContent())
+            using (var content = new MultipartFormDataContent())
             {
                 var fileContent = new StreamContent(archivo.OpenReadStream());
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(archivo.ContentType);
