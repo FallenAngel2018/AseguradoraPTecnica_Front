@@ -1,0 +1,40 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bienvenido al Sistema de Seguros</h1>
+    <p class="lead">Gestión integral de clientes, pólizas y seguros</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Clientes</h5>
+                <p class="card-text">Administra la información de tus clientes</p>
+                <a asp-page="/Cliente/Index" class="btn btn-primary">Ir a Clientes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Seguros</h5>
+                <p class="card-text">Gestiona los diferentes tipos de seguros</p>
+                <a asp-page="/Seguros/Index" class="btn btn-primary">Ir a Seguros</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Pólizas</h5>
+                <p class="card-text">Consulta y administra las pólizas activas</p>
+                <a asp-page="/Polizas/Index" class="btn btn-primary">Ir a Pólizas</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="8.2.1" />
+  </ItemGroup>
+
+  <Target Name="CompilarAngular" BeforeTargets="Build">
+    <!-- Restaurar paquetes npm solo si no existe node_modules -->
+    <Exec Command="cd AseguradoraApp &amp;&amp; npm install" Condition="!Exists('AseguradoraApp\node_modules')" />
+
+    <!-- Compilar Angular -->
+    <Exec Command="cd AseguradoraApp &amp;&amp; npm run build" />
+  </Target>
+
+  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+    <!-- Compilar Angular en modo producción al publicar -->
+    <Exec WorkingDirectory="AseguradoraApp" Command="npm run build -- --configuration production" />
+
+    <!-- Incluir archivos compilados de Angular en la publicación -->
+    <ItemGroup>
+      <DistFiles Include="wwwroot\ng-app\**" />
+      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+        <RelativePath>wwwroot\ng-app\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
+
+
+
+</Project>
