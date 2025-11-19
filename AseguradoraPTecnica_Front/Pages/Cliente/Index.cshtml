@@ -246,29 +246,6 @@
         }
 
 
-
-        function cargarFormularioCliente(clienteId = null) {
-            var url = '/Cliente/Index?handler=FormularioCliente';
-            if (clienteId) {
-                url += '&id=' + clienteId;
-                $('#modalClienteLabel').text('Editar Cliente');
-            } else {
-                $('#modalClienteLabel').text('Nuevo Cliente');
-            }
-
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(response) {
-                    $('#modalCliente .modal-body').html(response);
-                    $('#modalCliente').modal('show');
-                },
-                error: function(xhr, status, error) {
-                    alert('Error al cargar el formulario: ' + error);
-                }
-            });
-        }
-
         function formatearTamanoArchivo(bytes, decimales = 2) {
             if (bytes === 0) return '0 Bytes';
 
