@@ -124,12 +124,6 @@ namespace AseguradoraPTecnica_Front.Pages.Cliente
         }
 
 
-
-
-
-
-
-
     }
 
 }

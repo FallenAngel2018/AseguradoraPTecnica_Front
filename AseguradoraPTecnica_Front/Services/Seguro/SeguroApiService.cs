@@ -171,9 +171,44 @@ namespace AseguradoraPTecnica_Front.Services.Seguro
             }
         }
 
-        public Task<List<SeguroAsignadoDetalleViewModel>> GetAssignedInsurancesDetailsByCedulaAsync(string cedula)
+        public async Task<ApiResponse<List<SegurosContratadosViewModel>>> BuscarSegurosContratadosPorCedulaOCodSeguroAsync(string arg_busqueda, int opcion)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var httpClient = _httpClientFactory.CreateClient("SegurosAPI");
+                var parametros = new SeguroBusquedaInputModel
+                {
+                    Busqueda = arg_busqueda,
+                    Opcion = opcion
+                };
+
+                var response = await httpClient.PostAsJsonAsync("Seguro/BuscarSegurosContratados", parametros);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<ApiResponse<List<SegurosContratadosViewModel>>>();
+                    return result!;
+                }
+                else
+                {
+                    return new ApiResponse<List<SegurosContratadosViewModel>>
+                    {
+                        success = false,
+                        message = $"Error: {response.StatusCode}",
+                        data = new List<SegurosContratadosViewModel>()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<List<SegurosContratadosViewModel>>
+                {
+                    success = false,
+                    message = ex.Message,
+                    data = new List<SegurosContratadosViewModel>()
+                };
+            }
         }
+
     }
 }

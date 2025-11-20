@@ -30,7 +30,6 @@ namespace AseguradoraPTecnica_Front.Pages.Seguro
         {
             try
             {
-                // Cargar Seguros
                 var responseSeguros = await _seguroService.ObtenerTodosAsync();
                 if (responseSeguros.success)
                 {
@@ -65,50 +64,14 @@ namespace AseguradoraPTecnica_Front.Pages.Seguro
         {
             if (!ModelState.IsValid)
             {
-                // Retornar página con errores para mostrar mensajes o modal volver a abrir
                 return Page();
             }
 
-            // Aquí usas NuevoSeguro que estará lleno con los datos del formulario
-            // Ejemplo: guardarlo en base de datos vía servicio
             await _seguroService.CrearSeguroAsync(NuevoSeguro);
 
-            // Rediriges o retornas JSON, según necesidad
-            return RedirectToPage(); // O usar Partial, JsonResult, etc.
+            return RedirectToPage();
         }
 
         
-
-        //public void OnGet()
-        //{
-        //    Seguros = new List<SeguroViewModel>
-        //    {
-        //        new SeguroViewModel
-        //        {
-        //            IdSeguro = 2,
-        //            NombreSeguro = "Seguro de Salud",
-        //            Codigo = "SS001",
-        //            SumaAsegurada = 7500,
-        //            Prima = 1500,
-        //            EdadMinima = 31,
-        //            EdadMaxima = 119,
-        //            Estado = 1
-        //        },
-        //        new SeguroViewModel
-        //        {
-        //            IdSeguro = 3,
-        //            NombreSeguro = "Seguro de Vida",
-        //            Codigo = "SV003",
-        //            SumaAsegurada = 30000,
-        //            Prima = 800,
-        //            EdadMinima = 0,
-        //            EdadMaxima = 19,
-        //            Estado = 1
-        //        }
-        //    };
-        //}
-
-
-
     }
 }

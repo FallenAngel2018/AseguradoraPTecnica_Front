@@ -80,8 +80,72 @@ namespace AseguradoraPTecnica_Front.Pages.Seguro
             return RedirectToPage();
         }
 
+        public async Task OnPostBuscarAsync()
+        {
+            var busqueda = Request.Form["busqueda"].ToString();
+            var tipoBusquedaStr = Request.Form["tipoBusqueda"].ToString();
 
-        
+            if (string.IsNullOrWhiteSpace(busqueda))
+            {
+                await ObtenerTodosLosSegurosContratados();
+                await ObtenerTodosLosSeguros();
+                await ObtenerTodosLosClientes();
+                Estados = new List<EstadoViewModel>
+                {
+                    new EstadoViewModel { IdEstado = 1, Estado = "Activo" },
+                    new EstadoViewModel { IdEstado = 2, Estado = "Pendiente" },
+                    new EstadoViewModel { IdEstado = 0, Estado = "Inactivo" }
+                };
+                MensajeErrorSegurosContratados = null; // Limpia mensaje
+                return;
+            }
+
+            int tipoBusqueda;
+            if (tipoBusquedaStr == "cedula")
+                tipoBusqueda = 1;
+            else if (tipoBusquedaStr == "codigo")
+                tipoBusqueda = 2;
+            else
+                tipoBusqueda = 0;
+
+            if (tipoBusqueda != 1 && tipoBusqueda != 2)
+            {
+                MensajeErrorSegurosContratados = "Tipo de búsqueda inválido";
+                SegurosContratados = new List<SegurosContratadosViewModel>();
+                await ObtenerTodosLosClientes();
+                Estados = new List<EstadoViewModel>
+                {
+                    new EstadoViewModel { IdEstado = 1, Estado = "Activo" },
+                    new EstadoViewModel { IdEstado = 2, Estado = "Pendiente" },
+                    new EstadoViewModel { IdEstado = 0, Estado = "Inactivo" }
+                };
+                return;
+            }
+
+            var responseSegurosContratados = await _seguroService.BuscarSegurosContratadosPorCedulaOCodSeguroAsync(busqueda, tipoBusqueda);
+
+            if (responseSegurosContratados.success && responseSegurosContratados.data.Any())
+            {
+                SegurosContratados = responseSegurosContratados.data;
+                MensajeErrorSegurosContratados = null;
+            }
+            else
+            {
+                SegurosContratados = new List<SegurosContratadosViewModel>();
+                MensajeErrorSegurosContratados = responseSegurosContratados.message ?? "No se encontraron resultados.";
+            }
+
+            await ObtenerTodosLosSeguros();
+            await ObtenerTodosLosClientes();
+            Estados = new List<EstadoViewModel>
+            {
+                new EstadoViewModel { IdEstado = 1, Estado = "Activo" },
+                new EstadoViewModel { IdEstado = 2, Estado = "Pendiente" },
+                new EstadoViewModel { IdEstado = 0, Estado = "Inactivo" }
+            };
+        }
+
+
 
 
 
