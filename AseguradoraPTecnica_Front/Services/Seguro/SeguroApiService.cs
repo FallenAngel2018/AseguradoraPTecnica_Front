@@ -97,6 +97,83 @@ namespace AseguradoraPTecnica_Front.Services.Seguro
             }
         }
 
+        
+        public async Task<ApiResponse<List<SegurosContratadosViewModel>>> ObtenerTodosLosSegurosContratadosAsync()
+        {
+            try
+            {
+                var httpClient = _httpClientFactory.CreateClient("SegurosAPI");
+                var response = await httpClient.GetAsync("Seguro/GetSegurosAsignados");
 
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var apiResponse = JsonSerializer.Deserialize<ApiResponse<List<SegurosContratadosViewModel>>>(content, _jsonOptions);
+                    return apiResponse ?? new ApiResponse<List<SegurosContratadosViewModel>>
+                    {
+                        success = false,
+                        message = "Respuesta vacía de la API",
+                        data = new List<SegurosContratadosViewModel>()
+                    };
+                }
+
+                return new ApiResponse<List<SegurosContratadosViewModel>>
+                {
+                    success = false,
+                    message = $"Error: {response.StatusCode}",
+                    data = new List<SegurosContratadosViewModel>()
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<List<SegurosContratadosViewModel>>
+                {
+                    success = false,
+                    message = ex.Message,
+                    data = new List<SegurosContratadosViewModel>()
+                };
+            }
+        }
+
+
+        public async Task<ApiResponse<SeguroAsignadoDetalleViewModel>> AsignarSegurosAsync(SeguroAsignadoInputModel seguros)
+        {
+            try
+            {
+                var httpClient = _httpClientFactory.CreateClient("SegurosAPI");
+
+                var response = await httpClient.PostAsJsonAsync("Seguro/AsignarSeguros", seguros);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadFromJsonAsync<ApiResponse<SeguroAsignadoDetalleViewModel>>();
+                    return result;
+                }
+                else
+                {
+                    return new ApiResponse<SeguroAsignadoDetalleViewModel>
+                    {
+                        success = false,
+                        message = $"Error: {response.StatusCode}",
+                        data = new SeguroAsignadoDetalleViewModel()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<SeguroAsignadoDetalleViewModel>
+                {
+                    success = false,
+                    message = ex.Message,
+                    data = new SeguroAsignadoDetalleViewModel()
+                };
+            }
+        }
+
+        public Task<List<SeguroAsignadoDetalleViewModel>> GetAssignedInsurancesDetailsByCedulaAsync(string cedula)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

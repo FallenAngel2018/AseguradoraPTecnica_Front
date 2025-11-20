@@ -97,6 +97,17 @@ namespace AseguradoraPTecnica_Front.Pages.Cliente
 
                     var resultado = await _clienteService.EnviarArchivoAApiAsync(archivoTemp);
 
+                    var responseClientes = await _clienteService.ObtenerTodosAsync();
+
+                    if (responseClientes.success)
+                    {
+                        Clientes = responseClientes.data;
+                    }
+                    else
+                    {
+                        MensajeError = responseClientes.message;
+                    }
+
                     return new JsonResult(resultado);
                 }
             }

@@ -1,12 +1,30 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
 <head>
+    
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - Sistema de Seguros</title>
+
+    <!-- Bootstrap CSS local -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <!-- Choices.js CSS (para selects modernos y buscables) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+    <!-- Tu CSS personalizado -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Bootstrap JS local -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Choices.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+
 </head>
 <body>
     <header>
@@ -30,7 +48,7 @@
                             <a class="nav-link" asp-page="/Seguro/Index">Seguros</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-page="/Reportes/Index">Reportes</a>
+                            <a class="nav-link" asp-page="/Seguro/ContratarSeguros">Contratar</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-page="/Polizas/Index">Pólizas</a>

@@ -1,5 +1,8 @@
+using AseguradoraPTecnica_Front.Models.Cliente;
+using AseguradoraPTecnica_Front.Models.Estado;
 using AseguradoraPTecnica_Front.Models.Seguro;
 using AseguradoraPTecnica_Front.Services;
+using AseguradoraPTecnica_Front.Services.Cliente;
 using AseguradoraPTecnica_Front.Services.Seguro;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,29 +12,42 @@ namespace AseguradoraPTecnica_Front.Pages.Seguro
     public class SeguroIndexModel : PageModel
     {
         private readonly ISeguroApiService _seguroService;
+        private readonly IClienteApiService _clienteService;
 
-        public SeguroIndexModel(ISeguroApiService seguroService)
+        public SeguroIndexModel(ISeguroApiService seguroService, IClienteApiService clienteService)
         {
             _seguroService = seguroService;
+            _clienteService = clienteService;
+            
         }
 
         public List<SeguroViewModel> Seguros { get; set; }
+        public List<ClienteViewModel> Clientes { get; set; }
+        public List<EstadoViewModel> Estados { get; set; }
         public string MensajeError { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
             try
             {
-                var response = await _seguroService.ObtenerTodosAsync();
-
-                if (response.success)
+                // Cargar Seguros
+                var responseSeguros = await _seguroService.ObtenerTodosAsync();
+                if (responseSeguros.success)
                 {
-                    Seguros = response.data;
+                    Seguros = responseSeguros.data;
                 }
                 else
                 {
-                    MensajeError = response.message;
+                    MensajeError = responseSeguros.message;
                 }
+
+
+                Estados = new List<EstadoViewModel>
+                {
+                    new EstadoViewModel { IdEstado = 1, Estado = "Activo" },
+                    new EstadoViewModel { IdEstado = 2, Estado = "Pendiente" },
+                    new EstadoViewModel { IdEstado = 0, Estado = "Inactivo" }
+                };
 
                 return Page();
             }
@@ -41,6 +57,7 @@ namespace AseguradoraPTecnica_Front.Pages.Seguro
                 return Page();
             }
         }
+
 
         [BindProperty]
         public SeguroInputModel NuevoSeguro { get; set; }
@@ -60,22 +77,12 @@ namespace AseguradoraPTecnica_Front.Pages.Seguro
             return RedirectToPage(); // O usar Partial, JsonResult, etc.
         }
 
+        
 
         //public void OnGet()
         //{
         //    Seguros = new List<SeguroViewModel>
         //    {
-        //        new SeguroViewModel
-        //        {
-        //            IdSeguro = 1,
-        //            NombreSeguro = "Seguro de Auto",
-        //            Codigo = "SA001",
-        //            SumaAsegurada = 10000,
-        //            Prima = 1500,
-        //            EdadMinima = 31,
-        //            EdadMaxima = 119,
-        //            Estado = 1
-        //        },
         //        new SeguroViewModel
         //        {
         //            IdSeguro = 2,

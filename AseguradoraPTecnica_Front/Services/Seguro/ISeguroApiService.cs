@@ -7,5 +7,9 @@ namespace AseguradoraPTecnica_Front.Services.Seguro
     {
         Task<ApiResponse<List<SeguroViewModel>>> ObtenerTodosAsync();
         Task<ApiResponse<SeguroViewModel>> CrearSeguroAsync(SeguroInputModel nuevoSeguro);
+        Task<ApiResponse<List<SegurosContratadosViewModel>>> ObtenerTodosLosSegurosContratadosAsync();
+        Task<ApiResponse<SeguroAsignadoDetalleViewModel>> AsignarSegurosAsync(SeguroAsignadoInputModel seguros);
+        Task<List<SeguroAsignadoDetalleViewModel>> GetAssignedInsurancesDetailsByCedulaAsync(string cedula);
+
     }
 }

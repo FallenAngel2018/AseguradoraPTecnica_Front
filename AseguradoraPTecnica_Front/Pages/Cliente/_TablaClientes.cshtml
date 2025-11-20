@@ -40,9 +40,13 @@
                         {
                             <span class="badge bg-success">Activo</span>
                         }
-                        else
+                        else if (cliente.Estado == 0)
                         {
                             <span class="badge bg-danger">Inactivo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning">Pendiente</span>
                         }
                     </td>
                     <td>

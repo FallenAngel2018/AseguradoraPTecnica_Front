@@ -233,16 +233,16 @@
         });
 
         function cargarClientes() {
-            $.ajax({
-                url: '/Cliente/Index?handler=ActualizarTablaParcial',
-                type: 'GET',
-                success: function(html) {
-                    $('#tablaClientesContainer').html(html);  // Actualiza el div con nuevo HTML
-                },
-                error: function () {
-                    alert('Error al cargar la tabla de clientes');
-                }
-            });
+            // $.ajax({
+            //     url: '/Cliente/Index?handler=ActualizarTablaParcial',
+            //     type: 'GET',
+            //     success: function(html) {
+            //         $('#tablaClientesContainer').html(html);  // Actualiza el div con nuevo HTML
+            //     },
+            //     error: function () {
+            //         alert('Error al cargar la tabla de clientes');
+            //     }
+            // });
         }
 
 
